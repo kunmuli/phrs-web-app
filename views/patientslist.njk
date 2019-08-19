@@ -104,6 +104,7 @@ $(function(){
     $.ajax({
         method : 'GET',
         url: 'http://localhost:3000/api/Patient',
+        xhrFields: {withCredentials:true},
         success: function(data) {
             
             var template = $('#patientstemp').html();

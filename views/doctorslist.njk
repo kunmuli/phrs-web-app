@@ -112,6 +112,7 @@ $(function(){
     $.ajax({
         method : 'GET',
         url: 'http://localhost:3000/api/Doctor',
+        xhrFields: {withCredentials:true},
         success: function(data) {
             
             var template = $('#doctorstemp').html();

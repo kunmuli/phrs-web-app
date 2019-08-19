@@ -104,8 +104,9 @@
 $(function(){
 
     $.ajax({
-        method : 'GET',
+        type : 'GET',
         url: 'http://localhost:3000/api/MedicalRecord',
+        xhrFields: {withCredentials:true},
         success: function(data) {
             
             var template = $('#recstemp').html();

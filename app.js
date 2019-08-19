@@ -3,16 +3,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var nunjucks = require('nunjucks');
+var fileUpload = require('express-fileupload');
 
 var indexRouter = require('./routes/index');
-var dashboardRouter = require('./routes/dashboard');
-var recordsRouter = require('./routes/record');
-var doctorsRouter = require('./routes/doctor');
-var patientsRouter = require('./routes/patient');
-var researchersRouter = require('./routes/researcher');
+var cardsRouter = require('./routes/cards');
 var usersRouter = require('./routes/users');
 
-var port = 8080;
+var port = 4000;
 
 var app = express();
 nunjucks.configure('views', {
@@ -26,13 +23,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// default options
+app.use(fileUpload());
+
 
 app.use('/', indexRouter);
-app.use('/dashboard', dashboardRouter);
-app.use('/records', recordsRouter);
-app.use('/doctors', doctorsRouter);
-app.use('/patients', patientsRouter);
-app.use('/researchers', researchersRouter);
+app.use('/cards', cardsRouter);
 app.use('/users', usersRouter);
 
 app.listen(port, () => console.log(`The app is up on port ${port}!`))

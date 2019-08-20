@@ -1,0 +1,141 @@
+{% extends "./templates/layout.njk" %}
+
+{% block content %}
+    <!-- Header-->
+    <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" style="min-height: 600px; background-image: url(img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
+        <!-- Mask -->
+        <span class="mask bg-gradient-default opacity-8"></span>
+        <!-- Header container -->
+        <div class="container-fluid d-flex align-items-center">
+            <div class="row">
+                <div class="col-lg-7 col-md-10">
+                    <h1 class="display-2 text-white">Hello</h1>
+                    <p class="text-white mt-0 mb-5">You can use this page to share your record</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="container-fluid mt--7">
+        <div class="row">
+            <div class="col-xl-10 order-xl-1">
+                <div class="card bg-secondary shadow">
+                    <div class="card-header bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h3 class="mb-0">Share record</h3>
+                            </div>
+                            <div class="col-4 text-right">
+                                <a href="/records" class="btn btn-sm btn-primary">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form role="form" id="share-form">
+                            <h6 class="heading-small text-muted mb-4">Record Information</h6>
+                            <div class="pl-lg-4">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="input-recordId">Record Id</label>
+                                            <input type="text" id="input-recordId" class="form-control form-control-alternative" placeholder="Record Id" value="{{id}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="input-authorId">Author Id</label>
+                                            <input type="email" id="input-authorId" class="form-control form-control-alternative" placeholder="Author Id" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-4"/>
+                            <!-- Description -->
+                            <h6 class="heading-small text-muted mb-4">Additional Information</h6>
+                            <div class="pl-lg-4">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="diagnosis">Diagnosis</label>
+                                    <textarea rows="4" id="diagnosis" class="form-control form-control-alternative" placeholder="A diagnosis" ></textarea>
+                                </div>
+                            </div>
+                            <hr class="my-4"/>
+                            <!-- Address -->
+                            <h6 class="heading-small text-muted mb-4">Share With</h6>
+                            <div class="pl-lg-4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="input-doctor">Doctor</label>
+                                            <input id="input-doctor" class="form-control form-control-alternative" placeholder="Doctor ID" value="" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+
+                                <button type="button" class="btn btn-primary my-4" id="btnSubmit">Submit</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div
+{% endblock %}
+
+{% block morejs %}
+$(function(){
+
+    $.ajax({
+        type : 'GET',
+        url: 'http://localhost:3000/api/MedicalRecord/'+$('#input-recordId').val(),
+        xhrFields: {withCredentials:true},
+        success: function(data) {
+            $("#input-authorId").val(data.authorId.substring(38,49));
+            $("#diagnosis").text(data.diagnosis);
+          }
+    });
+   
+
+    $("#btnSubmit").click(function (event) {
+
+        //stop submit the form, we will post it manually.
+        event.preventDefault();
+
+        // Get form data
+        var data = JSON.stringify({
+                "$class": "org.conisol.mynetwork.AuthorizeAccess",
+                "doctor": "resource:org.conisol.mynetwork.Doctor#"+$('#input-doctor').val(),
+                "record": "resource:org.conisol.mynetwork.MedicalRecord#"+$('#input-recordId').val()
+            });
+            
+		// disabled the submit button
+        $("#btnSubmit").prop("disabled", true);
+
+          $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/api/AuthorizeAccess',
+            xhrFields: {withCredentials:true},
+            dataType: 'json',
+            contentType: 'application/json',
+            data: data,
+            success: function (response) {
+                $('#share-form').trigger('reset');
+                $("#btnSubmit").prop("disabled", false);
+            },
+            error: function (e) {
+                console.log(e);
+                $("#result").text(e.responseText);
+                $("#btnSubmit").prop("disabled", false);
+
+            }
+        }); 
+
+    });
+   
+});
+{% endblock %}

@@ -46,4 +46,22 @@ router.get('/researchers', function(req, res, next) {
   res.render('researcherslist');
 });
 
+
+/* Route to change cards */
+router.get('/change', function(req, res, next) {
+  res.render('cardschange');
+});
+
+/* Route to share record */
+router.get('/grantaccess', function(req, res, next) {
+  var recordId = req.query.id;
+  res.render('access',{id:recordId});
+});
+
+/* Route to revoke access to record*/
+router.get('/revokeaccess', function(req, res, next) {
+  var recordId = req.query.id;
+  res.render('revoke',{id:recordId});
+});
+
 module.exports = router;

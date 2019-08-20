@@ -2,32 +2,100 @@
 {% extends "./templates/layout.njk" %}
 
 {% block content %}
-  {% include "./templates/partials/header.njk" %}
-  <div class="container-fluid mt--7">
-    <!-- Table -->
-    <div class="row">
+    {% include "./templates/partials/header.njk" %}
+    <div class="container-fluid mt--7">
+        <!-- Table -->
+        <div class="row">
             <div class="col">
-            <div class="card shadow">
-                <div class="card-header border-0">
-                <h3 class="mb-0">Medical Records</h3>
-                </div>
-                <div class="table-responsive">
-                    
-                        <table class="table align-items-center table-flush">
-                    <thead class="thead-light">
-                    <tr>
-                        <th scope="col">Record ID</th>
-                        <th scope="col">Diagnosis</th>
-                        <th scope="col">Medicine</th>
-                        <th scope="col">Research Access</th>
-                        <th scope="col">Permissions</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody id="recslist">
+                <div class="card shadow">
+                    <div class="card-header border-0">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h3 class="mb-0">Medical Records</h3>
+                            </div>
+                            <div class="col-6 col-md-4">
 
-                    <script id="recstemp" type="text/template7">
-                    {{ '{{#each this}}' }}
+                                <button class="btn btn-icon btn-3 btn-primary" type="button" data-toggle="modal" data-target="#modal-form">
+                                    <span class="btn-inner--icon">
+                                        <i class="ni ni-fat-add"></i>
+                                    </span>
+
+                                    <span class="btn-inner--text">Add Record</span>
+
+                                </button>
+                                <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
+                                        <div class="modal-content">
+
+                                            <div class="modal-body p-0">
+
+                                                <div class="card bg-secondary shadow border-0">
+
+                                                    <div class="card-body px-lg-5 py-lg-5">
+                                                        <div class="text-center text-muted mb-4">
+                                                            <small>Add Record</small>
+                                                        </div>
+                                                        <form role="form" id="cardUploadForm">
+                                                            <div class="form-group mb-3">
+                                                                
+                                                                <label class="form-control-label" for="recordId">Record ID</label>
+                                                                <input type="text" placeholder="Record ID" class="form-control" id="recordId"/>
+
+                                                            </div>
+                                                            <div class="form-group">
+                                                                
+                                                                <label class="form-control-label" for="diagnosis">Diagnosis</label>
+                                                            <textarea class="form-control" id="diagnosis" rows="3" placeholder="Write the diagnosis here ..."></textarea>
+
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                                
+                                                                <label class="form-control-label" for="patientId">Patient ID</label>
+                                                                <input type="text" placeholder="Record ID" class="form-control" id="patientId"/>
+                                                            </div>
+                                                            <div class="form-group mb-3">
+
+                                                                <label class="form-control-label" for="doctorId">Doctor ID</label>
+                                                                <input type="text" placeholder="Record ID" class="form-control" id="doctorId"/>
+                                                            </div>
+
+                                                            {# <div class="custom-control custom-control-alternative custom-checkbox">
+                                                                <input class="custom-control-input" id=" customCheckLogin" type="checkbox">
+                                                                <label class="custom-control-label" for=" customCheckLogin">
+                                                                    <span class="text-muted">Research Access</span>
+                                                                </label>
+                                                            </div> #}
+                                                            <div class="text-center">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                <button type="button" class="btn btn-primary my-4" id="btnSubmit">Submit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+
+                                <table class="table align-items-center table-flush">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Record ID</th>
+                                            <th scope="col">Patient ID</th>
+                                            <th scope="col">Diagnosis</th>
+                                            <th scope="col">Medicine</th>
+                                            <th scope="col">Research Access</th>
+                                            <th scope="col">Author ID</th>
+                                            <th scope="col">Permissions</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recslist">
+
+                                        <script id="recstemp" type="text/template7">
+                                            {{ '{{#each this}}' }}
                     <tr>
                         <th scope="row">
                         <div class="media align-items-center">
@@ -37,7 +105,10 @@
                         </div>
                         </th>
                         <td>
-                        {{ '{{diagnosis}}' }}
+                        {{ '{{trimOwner owner}}' }}
+                        </td>
+                        <td>
+                        {{ '{{trimDiagnosis diagnosis}}' }} ...
                         </td>
                         <td>
                         {{ '{{medicine}}' }}
@@ -46,20 +117,14 @@
                         {{ '{{researchAccess}}' }}
                         </td>
                         <td>
+                        {{ '{{trimAuthor authorId}}' }}
+                        </td>
+                        <td>
                         {{ '{{permissions}}' }}
                         </td>
                         
                         <td class="text-right">
-                        <div class="dropdown">
-                            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </div>
+                        {{ '{{button recordId}}' }}
                         </td>
                     </tr>
                       {{ '{{/each}} '}}
@@ -102,13 +167,38 @@
 {% block morejs %}
 
 $(function(){
-
+    
     $.ajax({
         type : 'GET',
         url: 'http://localhost:3000/api/MedicalRecord',
         xhrFields: {withCredentials:true},
         success: function(data) {
-            
+            Template7.registerHelper('button', function (record){
+                    var ret = '<div class="dropdown">'+
+                                '<a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'+
+                               ' <i class="fas fa-ellipsis-v"></i>'+
+                                '</a>'+
+                                '<div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">'+
+                                '<a class="dropdown-item" href="/grantaccess?id='+record+'">Share</a>'+
+                                '<a class="dropdown-item" href="/revokeaccess?id='+record+'">Revoke</a>'+
+                                '</div>'+
+                            '</div>';
+                    return ret;
+                });
+            Template7.registerHelper('trimDiagnosis', function(passedString) {
+                var theString = passedString.substring(0,100);
+                return theString;
+            });
+            Template7.registerHelper('trimOwner', function(passedString) {
+                var theString = passedString.substring(39,49);
+                return theString;
+            });
+
+            Template7.registerHelper('trimAuthor', function(passedString) {
+                var theString = passedString.substring(38,49);
+                return theString;
+            });
+
             var template = $('#recstemp').html();
     
             // compile it with Template7
@@ -121,6 +211,53 @@ $(function(){
             $("#recslist").append(html);
 
           }
+    });
+    //Clear the modal
+    $('#modal-form').on('hidden.bs.modal', function (e) {
+    // do something...
+        $(this).find('form').trigger('reset');
+    });
+    $("#btnSubmit").click(function (event) {
+
+        //stop submit the form, we will post it manually.
+        event.preventDefault();
+
+        // Get form data
+        var data = JSON.stringify({
+                "$class": "org.conisol.mynetwork.MedicalRecord",
+                "recordId": $('#recordId').val(),
+                "diagnosis": $('#diagnosis').val(),
+                "medicine": [],
+                "quantity": [],
+                "files": [],
+                "researchAccess": false,
+                "permissions": [],
+                "owner": "resource:org.conisol.mynetwork.Patient#"+$('#patientId').val(),
+                "authorId": "resource:org.conisol.mynetwork.Doctor#"+$('#doctorId').val()
+            });
+            
+		// disabled the submit button
+        $("#btnSubmit").prop("disabled", true);
+
+          $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/api/MedicalRecord',
+            xhrFields: {withCredentials:true},
+            dataType: 'json',
+            contentType: 'application/json',
+            data: data,
+            success: function (response) {
+                $('#modal-form').modal('hide');
+                $("#btnSubmit").prop("disabled", false);
+            },
+            error: function (e) {
+
+                $("#result").text(e.responseText);
+                $("#btnSubmit").prop("disabled", false);
+
+            }
+        }); 
+
     });
    
 });
